@@ -12,7 +12,7 @@
 
 - Shout out to my beta testers who had to deal with me a lot!
 
-- Our partner [1of1 Servers]( https://1of1servers.com/) and their [discord](https://discord.gg/1of1servers) for their amazing server hosting! absolutely top notch.
+- Our partner [1of1 Servers]( https://1of1servers.com/) and their [Discord](https://discord.gg/1of1servers) for their amazing server hosting! absolutely top notch.
 
 <h1>Showcase Video Done By ShooterMcGamin</h1>
 
@@ -60,7 +60,7 @@ since qb updated their inventory and <b>changed</b> their event names it caused 
 
 ### some inventories hate special character so just dont use - or _ symbols just write the name
 
-<h1>How to install like a fuckin boss</h1>
+<h1>How to install like a fuckin' boss</h1>
 
 <b> Step One </b>
 
