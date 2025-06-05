@@ -1,3 +1,12 @@
+<h1>Acknowledgements</h1>
+
+<h2>Mustache Dom</h2>
+- Huge shoutout to Mustache Dom for creating an incredible, open source script for stash creation in one's FiveM server.
+  - All code here is his, not mine!
+
+<h2>Community Ox</h2>
+- Another huge shoutout to Community Ox for continuing to maintain Overextended's resources and keeping their legacy alive!
+
 <h1>md-stashes</h1>
 <div align="center">
   <a href="https://discord.gg/sAMzrB4DDx">
