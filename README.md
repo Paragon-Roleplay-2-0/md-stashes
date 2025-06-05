@@ -26,7 +26,7 @@
 
 - [qb-target](https://github.com/qbcore-framework/qb-target)
 
-**OR**
+  **OR**
 
 - [ox_target](https://github.com/CommunityOx/ox_target)
 
@@ -79,8 +79,8 @@ since qb updated their inventory and <b>changed</b> their event names it caused 
 
 <b> Step Three </b>
 
-- Add the following to ```qb-smallresources/server/logs.lua```
-  - ```lua ['mdstashes'] = 'insertyourdiscordwebhookhere',```
+- Add the following to ```qb-smallresources/server/logs.lua```:
+  - ```['mdstashes'] = 'insertyourdiscordwebhookhere',```
 
 <p> </p>
 
