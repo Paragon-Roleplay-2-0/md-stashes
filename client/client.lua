@@ -1,9 +1,11 @@
+if not lib.checkDependency('ox_lib', '3.30.0', true) then return end
+
 local QBCore = exports['qb-core']:GetCoreObject()
 local objectStash = {}
 
-lib.callback.register('md-stashes:client:makeNew', function(key) 
-    local keys = lib.callback.await('md-stashes:server:GetKeys', false) 
-    if key == keys then 
+lib.callback.register('md-stashes:client:makeNew', function(key)
+    local keys = lib.callback.await('md-stashes:server:GetKeys', false)
+    if key == keys then
         local stashmake, heading, object = StartRay()
         if stashmake then
             local input = lib.inputDialog('Stash Maker', {
@@ -37,9 +39,14 @@ local function CreateTargets()
 		local v = prints[i]
 		local name = v.name
 		local loc, data = json.decode(v.loc), json.decode(v.data)
-		local options = {name = name, label = 'Open Stash', action = function() OpenStash(name, data['weight'], data['slots'], data['password']) end,
-			canInteract = function() return check(data) end}
-		if data['object'] ~= false then 
+		local options = {
+			name = name,
+			label = 'Open Stash',
+			icon = 'fa-solid fa-toolbox', -- 'fa-solid fa-briefcase'
+			action = function() OpenStash(name, data['weight'], data['slots'], data['password']) end,
+			canInteract = function() return check(data) end
+		}
+		if data['object'] ~= false then
 			lib.requestModel(data['object'])
 			local obj = CreateObject(data['object'], loc.x, loc.y, loc.z, false, false, false)
 			table.insert(objectStash, {model = data['object'], object = obj, name = v.name, loc = loc,})
@@ -54,12 +61,11 @@ end
 
 AddEventHandler('onResourceStop', function(resourceName)
 	if GetCurrentResourceName() == resourceName then
-	  for k, v in pairs (objectStash) do 
+	  for k, v in pairs (objectStash) do
 		 DeleteEntity(v.object)
 	  end
 	end
 end)
-
 
 RegisterNetEvent('md-stashes:client:makenew', function()
 	CreateTargets()
@@ -72,7 +78,7 @@ end)
 lib.callback.register('md-stashes:client:edit', function(data)
 	local info = {}
 	local new = {}
-	for k, v in pairs (data) do 
+	for k, v in pairs (data) do
 		info[#info + 1] = {
 			title = v.name,
 			description = 'Edit Stash:' .. v.name,
@@ -128,5 +134,4 @@ lib.callback.register('md-stashes:client:deleteSelectedStash', function(data)
     end
     lib.registerContext({id = 'delete_stash_menu', title = 'Delete Stash', options = stashOptions })
 	lib.showContext('delete_stash_menu')
-
 end)

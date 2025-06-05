@@ -1,7 +1,11 @@
-Config = {}
-Config.Inv = 'qb'
-Config.Target = 'qb' -- qb, ox or interact
-Config.Defaultslot = 50
+Config = Config or {}
+
+Config.Inv = 'ox' -- supported: 'ox', 'oldqb', 'qb', 'outdated'
+
+Config.Target = 'ox' -- supported: 'qb', 'ox' or 'interact'
+
+Config.Defaultslot = 100
+
 Config.Defaultweight = 1000000
 
 Config.Objects = {

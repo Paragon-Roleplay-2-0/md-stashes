@@ -1,28 +1,46 @@
+if not lib.checkDependency('ox_lib', '3.30.0', true) then return end
+
 local QBCore = exports['qb-core']:GetCoreObject()
-local logs = false 
+
+local discordLogs = true
+
+local logs = false -- Fivemerr
+
 local logapi = GetConvar("fivemerrLogs", "")
+
 local endpoint = 'https://api.fivemerr.com/v1/logs'
+
 local headers = {
             ['Authorization'] = logapi,
             ['Content-Type'] = 'application/json',
     }
+
 local key = 'adsjhaskd' .. math.random(1, 1000000) .. 'asdasd' .. math.random(1,5) .. math.random(1,5) .. 'asdasd' .. 'ertyhzxcdjSA'
 
 CreateThread(function()
-if logs then 
-    print'^2 Logs Enabled for md-stashes'
-    if logapi == nil then 
-        print'^1 TURN LINE 2 TO FALSE OR ADD fivemerrLogs TO YOUR CFG LIKE THE README SAYS'
+if logs then
+    print('^2Fivemerr Logs Enabled For md-stashes')
+    if logapi == nil then
+        print('^1TURN LINE 2 TO FALSE OR ADD Fivemerr Logs TO YOUR CFG LIKE THE README SAYS')
     else
-        print'^2 API Key Looks Good, Dont Trust Me Though, Im Not Smart'
+        print('^2API Key Looks Good! Don\'t Trust Me Though, I\'m Not Smart.')
     end
 else
-    print'^1 logs disabled for md-stashes'
+    print('^1Fivemerr Logs Disabled For md-stashes')
 end
+
+end)
+
+CreateThread(function()
+    if discordLogs then
+        print('^2Discord Logs Enabled For md-stashes')
+    else
+        print('^1Discord Logs Disabled For md-stashes')
+    end
 end)
 
 local function Log(message, type)
-if logs == false then return end	
+if logs == false then return end
     local buffer = {
         level = "info",
         message = message,
@@ -34,9 +52,9 @@ if logs == false then return end
     }
      SetTimeout(500, function()
          PerformHttpRequest(endpoint, function(status, _, _, response)
-             if status ~= 200 then 
-                if not response then 
-                    print('^1[ERROR] ^7Failed to send logs to fivemerr')
+             if status ~= 200 then
+                if not response then
+                    print('^1[ERROR] ^7Failed To Send Logs To Fivemerr')
                     return end
                  if type(response) == 'string' then
                      response = json.decode(response) or response
@@ -47,16 +65,26 @@ if logs == false then return end
      end)
 end
 
+function discordLogging(text)
+    if discordLogs then
+        TriggerEvent('qb-log:server:CreateLog', 'mdstashes', 'Stash System', 'green', text)
+    end
+end
+
 lib.addCommand('newstash', {
     help = "Make A New Stash",
-    restricted = 'group.admin',
+    restricted = 'group.admin', -- or false
 }, function(source, args, raw)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src) 
+    local Player = QBCore.Functions.GetPlayer(src)
     local info = Player.PlayerData.charinfo
     local send =  lib.callback.await('md-stashes:client:makeNew', src, key)
     if not send then return end
-    Log('ID: ' .. source .. ' Name: ' .. info.firstname .. ' ' .. info.lastname .. ' Used Command newstash', 'command')
+    if discordLogs then
+        discordLogging('ID: ' .. source .. ' Name: ' .. info.firstname .. ' ' .. info.lastname .. ' Used The Command newstash')
+    else
+        Log('ID: ' .. source .. ' Name: ' .. info.firstname .. ' ' .. info.lastname .. ' Used Command newstash', 'command')
+    end
 end)
 
 RegisterServerEvent('md-stashes:server:OpenStash', function(name, weight, slot)
@@ -68,7 +96,7 @@ RegisterServerEvent('md-stashes:server:OpenStash', function(name, weight, slot)
    elseif GetResourceState('ps-inventory') == 'started' then
 	    exports['ps-inventory']:OpenInventory(source, name, data)
    else
-      print('^1 You Wouldnt See This If You Had Read The ReadMe.md')
+      print('^1 You Wouldn\'t See This If You Had Read The README.md')
    end
 end)
 
@@ -81,11 +109,11 @@ end)
 
 lib.callback.register('md-stashes:server:GetStashes', function(source)
    local result = MySQL.query.await('SELECT * FROM mdstashes',{})
-   if not result[1] then print('^1 You Either Didnt Run The SQL Or You Have No Stashes') return false end
+   if not result[1] then print('^1You Either Didn\'t Run The SQL, Or You Have No Stashes Currently!') return false end
    for i = 1, #result do
         local data = json.decode(result[i].data)
         if GetResourceState('ox_inventory') == 'started' then
-            exports.ox_inventory:RegisterStash(result[i].name, result[i].name, data['slots'],data['weight'])
+            exports.ox_inventory:RegisterStash(result[i].name, result[i].name, data['slots'], data['weight'])
         end
    end
    return result
@@ -101,7 +129,7 @@ lib.addCommand('editStashes', {
     restricted = 'group.admin',
 }, function(source, args, raw)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src) 
+    local Player = QBCore.Functions.GetPlayer(src)
     if not IsPlayerAceAllowed(source, 'command') then return false end
     local Data = MySQL.query.await('SELECT * FROM mdstashes')
     local options = lib.callback.await('md-stashes:client:edit', src, Data)
@@ -113,13 +141,12 @@ lib.addCommand('DeleteStashes', {
     restricted = 'group.admin',
 }, function(source, args, raw)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src) 
+    local Player = QBCore.Functions.GetPlayer(src)
     if not IsPlayerAceAllowed(source, 'command') then return false end
     local Data = MySQL.query.await('SELECT * FROM mdstashes')
     local options = lib.callback.await('md-stashes:client:deleteSelectedStash', src, Data)
     if not options then return end
 end)
-
 
 RegisterServerEvent('md-stashes:server:edit', function(new)
     local src = source
@@ -140,7 +167,7 @@ lib.addCommand('ConvertStashSQL', {
     restricted = 'group.admin',
 }, function(source, args, raw)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src) 
+    local Player = QBCore.Functions.GetPlayer(src)
     if not IsPlayerAceAllowed(source, 'command') then return false end
     local Data = MySQL.query.await('SELECT * FROM mdstashes')
     if not Data[1].data then
@@ -148,7 +175,7 @@ lib.addCommand('ConvertStashSQL', {
     end
     local hold = {}
     Wait(5000)
-    for i = 1, #Data do 
+    for i = 1, #Data do
         local v = Data[i]
         if v.item == nil then v.item = false end
         if v.password == 0 then v.password = false end
@@ -159,7 +186,7 @@ lib.addCommand('ConvertStashSQL', {
             rank = v.rank or 0,
             weight = v.weight,
             slots = v.slots,
-            item = v.item or false, 
+            item = v.item or false,
             targetlabel = 'Open Stash',
             password = v.password or false,
             citizenid = v.citizenid or false,
@@ -169,17 +196,16 @@ lib.addCommand('ConvertStashSQL', {
     end
     Wait(5000)
     local query = [[
-        ALTER TABLE mdstashes 
-        DROP COLUMN job, 
-        DROP COLUMN gang, 
-        DROP COLUMN rank, 
-        DROP COLUMN weight, 
-        DROP COLUMN slots, 
-        DROP COLUMN item, 
-        DROP COLUMN targetlabel, 
-        DROP COLUMN password, 
+        ALTER TABLE mdstashes
+        DROP COLUMN job,
+        DROP COLUMN gang,
+        DROP COLUMN rank,
+        DROP COLUMN weight,
+        DROP COLUMN slots,
+        DROP COLUMN item,
+        DROP COLUMN targetlabel,
+        DROP COLUMN password,
         DROP COLUMN citizenid;
     ]]
     MySQL.Async.execute(query, {})
 end)
-

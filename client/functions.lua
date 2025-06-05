@@ -1,4 +1,5 @@
 local invcall = ''
+
 CreateThread(function()
     if GetResourceState('qb-inventory') == 'started' then
 		invcall = 'qb-inventory'
@@ -14,7 +15,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local function openInventory(name, weight, slot, password)
 	if Config.Inv == 'ox' then
 		exports.ox_inventory:openInventory('stash', {id = name})
-	elseif Config.Inv == 'oldqb' then 
+	elseif Config.Inv == 'oldqb' then
 		Wait(100)
 		TriggerEvent(invcall..":client:SetCurrentStash", name)
 		TriggerServerEvent(invcall..":server:OpenInventory", "stash", name, {
@@ -64,7 +65,7 @@ function StartRay()
 		local entity = CreateObject(obj, coord.x, coord.y, coord.z, false, false)
 		repeat
         	local hit, entityHit, endCoords, surfaceNormal, matHash = lib.raycast.cam(511, 4, 10)
-        	if not created then 
+        	if not created then
 				created = true
 				lib.showTextUI('[E] To Place  \n  [DEL] To Cancel  \n  [<-] To Move Left  \n  [->] To Move Right')
 			else
@@ -85,7 +86,6 @@ function StartRay()
         	    DeleteEntity(entity)
         	    return endCoords, heading, obj
         	end
-
         	if IsControlPressed(0, 178) then
         	    lib.hideTextUI()
         	    run = false
@@ -106,52 +106,100 @@ function StartRay()
     	        run = false
     	        return endCoords, nil, false
     	    end
-
     	    if IsControlPressed(0, 178) then
     	        lib.hideTextUI()
     	        run = false
     	        return nil
     	    end
-
     	    Citizen.Wait(Wait)
     	until run == false
 	end
 end
 
 function AddBoxZone(name, coords, options)
-    if Config.Target == 'ox' then 
-       name = exports.ox_target:addBoxZone({name = name, coords = vector3(coords.x, coords.y, coords.z-1), size = vec3(1,1,1), options = {
-            {label = options.label, event = options.event or nil,onSelect = options.action or nil, canInteract = options.canInteract,}
-       }} )
+    if Config.Target == 'ox' then
+       name = exports.ox_target:addBoxZone({
+		name = name,
+		coords = vector3(coords.x, coords.y, coords.z-1),
+		size = vec3(1,1,1),
+		options = {
+            {
+				label = options.label,
+				icon = options.icon,
+				distance = 2.0,
+				event = options.event or nil,
+				onSelect = options.action or nil,
+				canInteract = options.canInteract,
+			}
+       }
+	})
     elseif Config.Target == 'qb' then
-        exports['qb-target']:AddBoxZone(name,coords, 1.0, 1.0, {name = name, heading = 156.0,minZ = coords.z-1, maxZ = coords.z+1, }, { 
-            options = {
-                {    label = options.label,     event = options.event or nil,    action = options.action or nil,     canInteract = options.canInteract,}
-            }, distance = 1.5})	
+        exports['qb-target']:AddBoxZone(name, coords, 1.0, 1.0, { name = name, heading = 156.0, minZ = coords.z-1, maxZ = coords.z+1 }, { options = {
+                {
+					label = options.label,
+					icon = options.icon,
+					event = options.event or nil,
+					action = options.action or nil,
+					canInteract = options.canInteract,
+				}
+            },
+			distance = 2.0 })
     elseif Config.Target == 'interaction' then
-        exports.interact:AddInteraction({ coords = vector3(coords.x, coords.y,coords.z), distance = 8.0, interactDst = 2.0, id = name, name = name}, {options = {
-            { label = options.label,  event = options.event or nil, action = options.action or nil,  canInteract = options.canInteract, }
-       }})
+        exports.interact:AddInteraction({ coords = vector3(coords.x, coords.y,coords.z), distance = 8.0, interactDst = 2.0, id = name, name = name }, { options = {
+            {
+				label = options.label,
+				event = options.event or nil,
+				action = options.action or nil,
+				canInteract = options.canInteract,
+			}
+       }
+	})
     end
 end
 
 function AddEntityTarg(entity, options)
-    if Config.Target == 'ox' then 
-        exports.ox_target:addLocalEntity(entity, { label = options.label,  event = options.event or nil, onSelect = options.action or nil,  canInteract = options.canInteract})
+    if Config.Target == 'ox' then
+        exports.ox_target:addLocalEntity(entity, {
+			label = options.label,
+			icon = options.icon,
+			event = options.event or nil,
+			onSelect = options.action or nil,
+			canInteract = options.canInteract
+		})
     elseif Config.Target == 'qb' then
-        exports['qb-target']:AddTargetEntity(entity, {options = {
-			{icon = options.icon, label = options.label, event = options.event or nil, action = options.action or nil, canInteract = options.canInteract, }
-		}, distance = 2.5})
+        exports['qb-target']:AddTargetEntity(entity, { options = {
+			{
+				label = options.label,
+				icon = options.icon,
+				event = options.event or nil,
+				action = options.action or nil,
+				canInteract = options.canInteract,
+			}
+		},
+		distance = 2.5})
     elseif Config.Target == 'interaction' then
-        exports.interact:AddLocalEntityInteraction({entity = entity, name = entity, id = entity, distance = 8.0, interactDst = 2.0, options = {
-            {icon = options.icon, label = options.label, event = options.event or nil, action = options.action or nil, canInteract = options.canInteract, }
-        }})
+        exports.interact:AddLocalEntityInteraction({
+			entity = entity,
+			name = entity,
+			id = entity,
+			distance = 8.0,
+			interactDst = 2.0,
+			options = {
+				{
+					icon = options.icon,
+					label = options.label,
+					event = options.event or nil,
+					action = options.action or nil,
+					canInteract = options.canInteract,
+				}
+        }
+	})
     end
 end
 
 function RemoveZones(spawned)
 	local prints = lib.callback.await('md-stashes:server:GetStashes')
-	for k, v in pairs (prints) do 
+	for k, v in pairs (prints) do
 		local js = json.decode(v.data)
 		if js['object'] == false then
 			if Config.Target == 'ox' then

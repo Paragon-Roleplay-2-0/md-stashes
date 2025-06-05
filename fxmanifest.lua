@@ -6,16 +6,17 @@ game "gta5"
 version '2.1.0'
 
 client_scripts {
-	'client/**.lua',
+	'client/**.lua'
 }
+
 server_scripts {
 	'server/**.lua',
-	'@oxmysql/lib/MySQL.lua',
+	'@oxmysql/lib/MySQL.lua'
 }
+
 shared_scripts {
     'shared/**.lua',
-	 '@ox_lib/init.lua',
+	'@ox_lib/init.lua'
 }
 
 lua54 'yes'
-
